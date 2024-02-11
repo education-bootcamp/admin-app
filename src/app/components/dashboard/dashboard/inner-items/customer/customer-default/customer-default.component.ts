@@ -3,6 +3,8 @@ import {MatButton} from "@angular/material/button";
 import {CustomersService} from "../../../../../services/customers.service";
 import {NgForOf} from "@angular/common";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {debounceTime, Subscription} from "rxjs";
 
 
 @Component({
@@ -11,12 +13,21 @@ import {MatPaginator, PageEvent} from "@angular/material/paginator";
   imports: [
     MatButton,
     NgForOf,
-    MatPaginator
+    MatPaginator,
+    ReactiveFormsModule
   ],
   templateUrl: './customer-default.component.html',
   styleUrl: './customer-default.component.scss'
 })
 export class CustomerDefaultComponent implements AfterViewInit, OnInit {
+
+  mform: FormGroup = new FormGroup({
+    text: new FormControl()
+  });
+
+  // @ts-ignore
+  obs:Subscription;
+
   constructor(private customerService: CustomersService) {
   }
 
@@ -34,6 +45,14 @@ export class CustomerDefaultComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
+
+    this.obs=this.mform.valueChanges
+      .pipe(debounceTime(1000))
+      .subscribe(data => {
+        this.searchText = data.text;
+        this.loadCustomers();
+      });
+
     this.loadCustomers();
   }
 
