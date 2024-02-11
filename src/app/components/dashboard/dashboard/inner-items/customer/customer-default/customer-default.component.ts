@@ -1,13 +1,17 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {MatButton} from "@angular/material/button";
 import {CustomersService} from "../../../../../services/customers.service";
+import {NgForOf} from "@angular/common";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 
 
 @Component({
   selector: 'app-customer-default',
   standalone: true,
   imports: [
-    MatButton
+    MatButton,
+    NgForOf,
+    MatPaginator
   ],
   templateUrl: './customer-default.component.html',
   styleUrl: './customer-default.component.scss'
@@ -21,6 +25,9 @@ export class CustomerDefaultComponent implements AfterViewInit, OnInit {
   page: any = 0;
   size: any = 10;
   searchText: any = '';
+  dataArray: any[] = [];
+  count = 0;
+  pageEvent: PageEvent | undefined;
 
   ngAfterViewInit(): void {
     this.controlsOn = true;
@@ -32,8 +39,14 @@ export class CustomerDefaultComponent implements AfterViewInit, OnInit {
 
   private loadCustomers() {
     this.customerService.findCustomers(this.page, this.size, this.searchText).subscribe(response => {
-      console.log(response.data);
+      this.dataArray = response.data.dataList;
+      this.count = response.data.count;
     })
   }
 
+  getServerData(pageData: any) {
+    this.page = pageData.pageIndex;
+    this.size = pageData.pageSize;
+    this.loadCustomers();
+  }
 }
