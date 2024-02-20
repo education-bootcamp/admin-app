@@ -11,9 +11,17 @@ export class DiscountsService {
   productUrl = environment.productUrl;
   constructor(private http:HttpClient) { }
 
-  public saveDiscount(category:any):Observable<any>{
-    return this.http.post(this.productUrl+'categories/create',{
-      category:category
+  public saveDiscount(
+    discountTitle:any,
+    discountType:any,
+    discount:any,
+    product:any,
+  ):Observable<any>{
+    return this.http.post(this.productUrl+'discounts/create',{
+      discountTitle:discountTitle,
+      discountType:discountType,
+      discount:discount,
+      productId:product
     })
   }
 
